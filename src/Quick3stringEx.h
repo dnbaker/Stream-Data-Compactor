@@ -2,6 +2,7 @@
 #define _QUICK3STRINGEX_H_
 
 #include <string>
+#include <cstring>
 #include <vector>
 #include <cassert>
 #include <algorithm>
@@ -14,7 +15,7 @@ namespace bw {
         private:
             static const int CUTOFF =  15;   // cutoff to insertion sort
             std::shared_ptr<std::string> buff;
-            int bufflen;
+            unsigned bufflen;
         public:
             Quick3stringEx() { };
             /**
@@ -37,10 +38,9 @@ namespace bw {
 
             //return the dth character of s, -1 if d = length of s
         private:
-            int charAt(int base, int d) const {
-                assert(d >= 0 && d <= bufflen);
-                if (d == bufflen) return -1;
-                return (unsigned char) buff->at(base + d);
+            int charAt(int base, unsigned d) const {
+                assert(d <= bufflen);
+                return d == bufflen ? -1 : static_cast<int>(static_cast<unsigned char>(buff->operator[](base + d)));
             }
 
             //3-way string quicksort a[lo..hi] starting at dth character
@@ -92,17 +92,12 @@ namespace bw {
 
             // is v less than w, starting at character d
             bool less(int v, int w, int d) const {
-                //assert (getString(v, d) == getString(w, d));
-                for (int i = d; i < bufflen; i++) {
-                    if (charAt(v, i) < charAt(w, i)) return true;
-                    if (charAt(v, i) > charAt(w, i)) return false;
-                }
-                return false;
+                return std::strcmp(buff->data() + d + v, buff->data() + d + w) < 0;
             }
 
             // is the array sorted
             bool isSorted(const std::vector<int> &a) const {
-                for (int i = 1; i < a.size(); i++)
+                for (unsigned i = 1; i < a.size(); i++)
                     if (less(a[i], a[i-1], 0))
                         return false;
                     //if (getString(a[i], bufflen) > getString(a[i-1], bufflen)) return false;

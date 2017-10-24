@@ -47,7 +47,7 @@ namespace bw
                 CircularSuffixArray cas(buffer);
                 int first = 0;
 
-                for (int i = 0; i < buffer.size(); i++)
+                for (unsigned i = 0; i < buffer.size(); i++)
                 {
                     if (cas.index(i) == 0)
                         first = i;
@@ -61,23 +61,21 @@ namespace bw
             // apply Burrows-Wheeler decoding, reading from standard input and writing to standard output
             void static decode(std::istream &streamin, std::ostream &streamout)
             {
-                std::vector<Item_uptr> pos(256);
+                Item_uptr pos[256];
 
-                int first = 0;
+                int first, len, m = 0, i = 0;
                 streamin.read(reinterpret_cast<char *>(&first), sizeof(first));
 
-                int i, m, len;
                 i = 0;
                 m = 0;
 
                 char c;
                 while (streamin.get(c)) {
-                    unsigned char d = c;
+                    const unsigned char d(c);
                     if (pos[d] == nullptr)
                         pos[d] = Item_uptr(new Item());
                     pos[d]->inc();
-                    pos[d]->enqueue(i);
-                    i++;
+                    pos[d]->enqueue(i++);
                 }
 
                 std::vector<int> next(i);
@@ -99,8 +97,7 @@ namespace bw
                 do {
                     streamout.put(sorted[i]);
                     i = next[i];
-                    m++;
-                } while (m < len);
+                } while (++m < len);
 
                 streamout.flush();
             }

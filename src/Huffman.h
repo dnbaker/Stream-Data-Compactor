@@ -100,11 +100,11 @@ namespace bw {
                 std::string input(std::istreambuf_iterator<char>(*(streamin.getStream())), {});
 
                 // tabulate frequency counts
-                std::vector<int> freq(R);
+                int freq[R];
+                std::memset(freq, 0, sizeof(freq));
                 for (int i = 0; i < input.size(); i++)
                 {
-                    assert(((UCHAR)input[i]) >= 0);
-                    freq[((UCHAR)input[i])]++;
+                    freq[(UCHAR)input[i]]++;
                 }
 
                 // build Huffman trie
@@ -118,24 +118,16 @@ namespace bw {
                 writeTrie(root, streamout);
 
                 // print number of bytes in original uncompressed message
-                int input_size = input.size();
+                const unsigned input_size = input.size();
                 streamout.write(reinterpret_cast<const char*>(&input_size), sizeof(input_size));
 
                 // use Huffman code to encode input
-                for (int i = 0; i < input.size(); i++) {
-                    std::string code = st[((UCHAR)input[i])];
-                    for (int j = 0; j < code.size(); j++) {
-                        if (code.at(j) == '0') {
-                            streamout.write(false);
-                        }
-                        else if (code.at(j) == '1') {
-                            streamout.write(true);
-                        }
-                        else
-                        {
-                            std::cout << "Code:" << code << std::endl;
-                            throw std::invalid_argument("Illegal state");
-                        }
+                unsigned char val;
+                for (unsigned i = 0; i < input.size(); ++i) {
+                    const std::string &code = st[((UCHAR)input[i])];
+                    for (unsigned j = 0; j < code.size(); j++) {
+                        if((val = code[j]-'0') > 1)
+                            throw std::invalid_argument(std::string("Illegal state [Code: " + code + "]");
                     }
                 }
 
@@ -145,7 +137,7 @@ namespace bw {
 
         private:
             // build the Huffman trie given frequencies
-            static Node *buildTrie(const std::vector<int> &freq) {
+            static Node *buildTrie(const int *freq) {
                 // initialze priority queue with singleton trees
                 std::priority_queue<Node_ptr, std::vector<Node_ptr>, std::greater<Node_ptr>> pq;
 
@@ -154,16 +146,14 @@ namespace bw {
                         pq.emplace(new Node(i, freq[i]));
                 // special case in case there is only one character with a nonzero frequency
                 if (pq.size() == 1) {
-                    if (freq['\0'] == 0) pq.emplace(new Node('\0', 0));
-                    else                 pq.emplace(new Node('\1', 0));
+                    pq.emplace(new Node(!!freq[0], 0));
                 }
 
                 // merge two smallest trees
                 while (pq.size() > 1) {
                     Node_ptr left(std::move(const_cast<Node_ptr&>(pq.top()))); pq.pop();
                     Node_ptr right(std::move(const_cast<Node_ptr&>(pq.top()))); pq.pop();
-                    auto freq = left->freq + right->freq;
-                    pq.emplace(new Node('\0', freq, left, right));
+                    pq.emplace(new Node('\0', left->freq + right->freq, left, right));
                 }
 
                 Node_ptr ret = std::move(const_cast<Node_ptr&>(pq.top())); pq.pop();
@@ -221,9 +211,7 @@ namespace bw {
                                     while (!x->isLeaf()) {
                                         bool bit;
                                         streamin.read(bit);
-
-                                        if (bit) x = x->right.get();
-                                        else     x = x->left.get();
+                                        x = (bit ? x->right: x->left).get();
                                     }
                                     //streamout.getStream()->put(x->ch);
                                     ss.put(x->ch);
