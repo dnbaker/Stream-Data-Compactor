@@ -19,7 +19,7 @@ namespace bw {
             CircularSuffixArray(const std::string &s)  // circular suffix array of s
                 :len(s.size())
                 ,idx(std::make_shared<std::vector<int>>(len))
-                ,b(std::make_shared<std::string>(s+s))
+                ,b(std::make_shared<std::string>())
             {
                 b->reserve(len << 1);
                 *b += s; *b += s;
