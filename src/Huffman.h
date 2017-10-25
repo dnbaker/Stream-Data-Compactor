@@ -128,6 +128,7 @@ namespace bw {
                     for (unsigned j = 0; j < code.size(); j++) {
                         if((val = code[j]-'0') > 1)
                             throw std::invalid_argument(std::string("Illegal state [Code: " + code + "]");
+                        streamout.write(val);
                     }
                 }
 
