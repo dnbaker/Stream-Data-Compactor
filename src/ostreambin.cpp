@@ -31,16 +31,14 @@ void bw::ostreambin::write(const char byte)
     }
 }
 
-void bw::ostreambin::write(const char* s, const int len)
+void bw::ostreambin::write(const char* s, const unsigned len)
 {
-    for (int i=0; i < len; ++i)
-        write(s[i]);
+    for (unsigned i=0; i < len; write(s[i++]));
 }
 
 void bw::ostreambin::write(const std::string s)
 {
-    for (int i = 0; i < s.size(); ++i)
-        write(s.at(i));
+    for(const auto c: s) write(c);
 }
 
 void bw::ostreambin::clearbuffer()

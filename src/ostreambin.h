@@ -29,7 +29,7 @@ namespace bw
 
             void write(const bool bit);
             void write(const char byte);
-            void write(const char* s, const int len);
+            void write(const char* s, const unsigned len);
             void write(const std::string s);
             void flush();
     };

@@ -2,6 +2,7 @@
 #define _HUFFMAN_H_
 
 #include <functional>
+#include <cstring>
 #include <string>
 #include <sstream>
 #include <cassert>
@@ -102,7 +103,7 @@ namespace bw {
                 // tabulate frequency counts
                 int freq[R];
                 std::memset(freq, 0, sizeof(freq));
-                for (int i = 0; i < input.size(); i++)
+                for (unsigned i = 0; i < input.size(); i++)
                 {
                     freq[(UCHAR)input[i]]++;
                 }
@@ -127,8 +128,8 @@ namespace bw {
                     const std::string &code = st[((UCHAR)input[i])];
                     for (unsigned j = 0; j < code.size(); j++) {
                         if((val = code[j]-'0') > 1)
-                            throw std::invalid_argument(std::string("Illegal state [Code: " + code + "]");
-                        streamout.write(val);
+                            throw std::invalid_argument(std::string("Illegal state [Code: " + code + "]"));
+                        streamout.write((char)val);
                     }
                 }
 

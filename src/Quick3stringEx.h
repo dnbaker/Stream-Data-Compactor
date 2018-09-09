@@ -8,15 +8,14 @@
 #include <algorithm>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 namespace bw {
-    class Quick3stringEx : boost::noncopyable {
+    class Quick3stringEx {
         private:
             static const int CUTOFF =  15;   // cutoff to insertion sort
             std::shared_ptr<std::string> buff;
             unsigned bufflen;
         public:
+            Quick3stringEx(const Quick3stringEx &ex)=delete;
             Quick3stringEx() { };
             /**
              * Rearranges the array of strings in ascending order.
