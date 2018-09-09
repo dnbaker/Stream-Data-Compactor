@@ -17,6 +17,7 @@ namespace bw {
         public:
             Quick3stringEx(const Quick3stringEx &ex)=delete;
             Quick3stringEx() { };
+            Quick3stringEx &operator=(const Quick3stringEx &ex)=delete;
             /**
              * Rearranges the array of strings in ascending order.
              *
